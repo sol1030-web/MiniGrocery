@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MiniGrocery</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/prototype.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <img src="~/img/LOGOit15.png" alt="MiniGrocery" class="sidebar-brand-logo me-2" onerror="this.onerror=null;this.src='/img/minigrocery-logo.svg';" />
+                <span>MiniGrocery</span>
+            </div>
+
+            <ul class="list-unstyled components">
+                <li class="sidebar-section-label px-3 py-2 small text-uppercase" style="letter-spacing: 1px;">Admin Portal</li>
+                <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
+                    <a asp-controller="Home" asp-action="Index">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+
+                <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Sales" ? "active" : "")">
+                    <a href="#salesSubmenu" data-bs-toggle="collapse" aria-expanded="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Sales" ? "true" : "false")" class="dropdown-toggle">
+                        <i class="fas fa-shopping-cart"></i> Sales
+                    </a>
+                    <ul class="collapse list-unstyled ps-3 @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Sales" ? "show" : "")" id="salesSubmenu">
+                        <li>
+                            <a asp-controller="Sales" asp-action="Create">New Sale (POS)</a>
+                        </li>
+                        <li>
+                            <a asp-controller="Sales" asp-action="Index">Sales History</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Product" ? "active" : "")">
+                    <a href="#productSubmenu" data-bs-toggle="collapse" aria-expanded="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Product" ? "true" : "false")" class="dropdown-toggle">
+                        <i class="fas fa-boxes"></i> Inventory
+                    </a>
+                    <ul class="collapse list-unstyled ps-3 @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Product" ? "show" : "")" id="productSubmenu">
+                        <li>
+                            <a asp-controller="Product" asp-action="Index">Product Records</a>
+                        </li>
+                        <li>
+                            <a asp-controller="Product" asp-action="Create">Add New Product</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="sidebar-section-label px-3 py-2 small text-uppercase" style="letter-spacing: 1px;">Client Portal</li>
+                <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "ClientDashboard" ? "active" : "")">
+                    <a asp-controller="ClientDashboard" asp-action="Index">
+                        <i class="fas fa-user-circle"></i> Client Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-history"></i> My Orders</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                </li>
+            </ul>
+        </nav>
+        <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+        <!-- Page Content -->
+        <div id="content">
+            <nav class="navbar navbar-top navbar-expand-lg navbar-light">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-link text-secondary">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    
+                    <h5 class="m-0 ms-3 text-secondary">@ViewData["Title"]</h5>
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="nav navbar-nav ms-auto align-items-center">
+                            <li class="nav-item me-3">
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-primary btn-sm dropdown-toggle rounded-pill px-3" type="button" id="portalSwitcher" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-exchange-alt me-1"></i> Switch Portal
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="portalSwitcher">
+                                        <li><h6 class="dropdown-header">Select Portal</h6></li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center" asp-controller="Home" asp-action="Index">
+                                                <div class="bg-primary text-white rounded-circle p-2 me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="fas fa-user-shield fa-xs"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold">Admin Portal</div>
+                                                    <div class="small text-muted">Manage store & inventory</div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center" asp-controller="ClientDashboard" asp-action="Index">
+                                                <div class="bg-success text-white rounded-circle p-2 me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="fas fa-user fa-xs"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold">Client Portal</div>
+                                                    <div class="small text-muted">View orders & profile</div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-secondary" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user-circle fa-lg me-1"></i> Admin
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-user-circle me-2"></i>Profile</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" asp-controller="Account" asp-action="Logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="main-content">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

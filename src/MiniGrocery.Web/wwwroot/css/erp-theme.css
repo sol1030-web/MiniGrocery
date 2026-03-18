@@ -1,0 +1,183 @@
+/* MiniGrocery ERP Theme
+   Scope: UI-only styling system to standardize look & feel across modules */
+
+:root {
+  --erp-font: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  --erp-bg: #f5f7fb;
+  --erp-card-bg: #ffffff;
+  --erp-text: #1f2937;
+  --erp-muted: #6b7280;
+  --erp-border: #e5e7eb;
+  --erp-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+
+  /* Brand */
+  --erp-primary: #2563eb; /* blue-600 */
+  --erp-primary-600: #1d4ed8;
+  --erp-primary-50: #eff6ff;
+
+  /* Status */
+  --erp-success: #16a34a;
+  --erp-warning: #d97706;
+  --erp-danger:  #dc2626;
+  --erp-info:    #0ea5e9;
+
+  /* Spacing scale (8px) */
+  --s-1: 4px;
+  --s0:  8px;
+  --s1:  16px;
+  --s2:  24px;
+  --s3:  32px;
+  --s4:  48px;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+html, body {
+  font-family: var(--erp-font);
+  color: var(--erp-text);
+  background-color: var(--erp-bg);
+}
+
+/* Containers */
+.erp-container {
+  padding: var(--s2);
+}
+
+/* Cards */
+.erp-card, .card.erp-card {
+  background: var(--erp-card-bg);
+  border: 1px solid var(--erp-border);
+  border-radius: var(--radius);
+  box-shadow: var(--erp-shadow);
+}
+.erp-card .card-header,
+.card.erp-card .card-header,
+.card .card-header {
+  background: #fff;
+  border-bottom: 1px solid var(--erp-border);
+  padding: var(--s1) var(--s2);
+}
+.erp-card .card-body,
+.card.erp-card .card-body,
+.card .card-body {
+  padding: var(--s2);
+}
+
+/* Page Header */
+.erp-page-header {
+  padding: var(--s1) 0 var(--s1);
+  margin-bottom: var(--s2);
+  border-bottom: 1px solid var(--erp-border);
+}
+.erp-breadcrumb {
+  color: var(--erp-muted);
+  font-size: 0.875rem;
+}
+.erp-breadcrumb a { color: var(--erp-muted); text-decoration: none; }
+.erp-breadcrumb a:hover { color: var(--erp-text); }
+.erp-title {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+
+/* Buttons */
+.erp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--erp-border);
+  font-weight: 600;
+  transition: all .15s ease-in-out;
+}
+.erp-btn i { font-size: 0.95rem; }
+.erp-btn-primary {
+  background: var(--erp-primary);
+  color: #fff;
+  border-color: transparent;
+}
+.erp-btn-primary:hover { background: var(--erp-primary-600); color: #fff; }
+.erp-btn-outline {
+  background: #fff;
+  color: var(--erp-text);
+}
+.erp-btn-outline:hover { border-color: var(--erp-primary); color: var(--erp-primary); }
+.erp-btn-danger { background: var(--erp-danger); color:#fff; border-color: transparent; }
+.erp-btn-danger:hover { filter: brightness(0.95); }
+
+/* Badges */
+.erp-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.erp-badge-success { background: rgba(22,163,74,.12); color: var(--erp-success); }
+.erp-badge-warning { background: rgba(217,119,6,.12); color: var(--erp-warning); }
+.erp-badge-danger  { background: rgba(220,38,38,.12); color: var(--erp-danger); }
+.erp-badge-info    { background: rgba(14,165,233,.12); color: var(--erp-info); }
+
+/* Tables */
+.erp-table { border: 1px solid var(--erp-border); border-radius: var(--radius-sm); overflow: hidden; }
+.erp-table.table { margin-bottom: 0; }
+.erp-table.table thead th {
+  background: var(--erp-primary-50);
+  border-bottom: 1px solid var(--erp-border);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: .02em;
+}
+.erp-table.table tbody tr:nth-child(even) { background: #fafbff; }
+.erp-table.table tbody tr:hover { background: #f3f7ff; }
+.erp-num { text-align: right; }
+
+/* Table toolbar */
+.erp-table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s1);
+  padding: var(--s1);
+  border: 1px solid var(--erp-border);
+  border-bottom: none;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: #fff;
+}
+.erp-input {
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--erp-border);
+  padding: 0 12px;
+  min-width: 240px;
+}
+.erp-select {
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--erp-border);
+  padding: 0 12px;
+  min-width: 160px;
+  background: #fff;
+}
+
+/* Micro-interactions */
+.erp-card, .erp-btn, .card { transition: box-shadow .2s ease, transform .2s ease; }
+.erp-card:hover { box-shadow: 0 12px 32px rgba(17,24,39,.1); }
+.erp-btn:active { transform: translateY(1px); }
+
+/* Utilities */
+.erp-gap-1 { gap: var(--s1); }
+.erp-mb-2 { margin-bottom: var(--s2); }
+.erp-ml-auto { margin-left: auto; }
+.erp-flex { display: flex; }
+.erp-align-center { align-items: center; }
+.erp-justify-between { justify-content: space-between; }
+.erp-text-muted { color: var(--erp-muted); }
+.erp-text-right { text-align: right; }
+
+/* Sticky table header support when parent has max-height */
+.table-responsive .table thead th { position: sticky; top: 0; z-index: 2; }

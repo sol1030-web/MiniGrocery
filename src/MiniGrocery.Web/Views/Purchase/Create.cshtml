@@ -1,0 +1,184 @@
+@model MiniGrocery.Web.Models.CreatePurchaseViewModel
+
+@{
+    ViewData["Title"] = "New Purchase";
+}
+
+<div class="container mt-4">
+    <h2>New Purchase Transaction (Restock)</h2>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Transaction Details</div>
+                <div class="card-body">
+                    <div class="form-group mb-3">
+                        <label>Supplier</label>
+                        <select id="supplierSelect" class="form-control">
+                            <option value="">-- Select Supplier --</option>
+                            @foreach (var supplier in Model.Suppliers)
+                            {
+                                <option value="@supplier.Id">@supplier.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <hr />
+                    
+                    <div class="form-group mb-3">
+                        <label>Product</label>
+                        <select id="productSelect" class="form-control">
+                            <option value="">-- Select Product --</option>
+                            @foreach (var product in Model.Products)
+                            {
+                                <option value="@product.Id" data-name="@product.Name">
+                                    @product.Name (Current Stock: @product.StockQuantity)
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label>Quantity</label>
+                        <input type="number" id="quantityInput" class="form-control" value="1" min="1" />
+                    </div>
+                     <div class="form-group mb-3">
+                        <label>Unit Cost (₱)</label>
+                        <input type="number" id="costInput" class="form-control" value="0.00" min="0.01" step="0.01" />
+                    </div>
+                    <button class="btn btn-primary" onclick="addToCart()">Add Item</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Purchase Order Items</div>
+                <div class="card-body">
+                    <table class="table table-bordered" id="cartTable">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Qty</th>
+                                <th>Unit Cost</th>
+                                <th>Subtotal</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Items will be added here -->
+                        </tbody>
+                    </table>
+                    <h4 class="text-end">Total Cost: <span id="grandTotal">₱0.00</span></h4>
+                    <button class="btn btn-success w-100 mt-3" onclick="submitTransaction()">Submit Purchase</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let cart = [];
+
+        function addToCart() {
+            const supplierId = document.getElementById('supplierSelect').value;
+            if (!supplierId) {
+                alert("Please select a supplier first.");
+                return;
+            }
+
+            const select = document.getElementById('productSelect');
+            const productId = select.value;
+            const quantity = parseInt(document.getElementById('quantityInput').value);
+            const cost = parseFloat(document.getElementById('costInput').value);
+            
+            if (!productId || quantity <= 0 || isNaN(cost) || cost <= 0) {
+                alert("Please select a product and enter valid quantity and cost.");
+                return;
+            }
+
+            const option = select.options[select.selectedIndex];
+            const name = option.getAttribute('data-name');
+
+            const existingItem = cart.find(i => i.productId === productId);
+            if (existingItem) {
+                existingItem.quantity += quantity;
+                // Update cost if needed? For now, we assume same cost or user updates it manually. 
+                // Let's just update to the latest cost entered.
+                existingItem.unitCost = cost; 
+            } else {
+                cart.push({ productId, name, unitCost: cost, quantity });
+            }
+
+            renderCart();
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(i => i.productId !== productId);
+            renderCart();
+        }
+
+        function renderCart() {
+            const tbody = document.querySelector('#cartTable tbody');
+            tbody.innerHTML = '';
+            let total = 0;
+
+            cart.forEach(item => {
+                const itemTotal = item.unitCost * item.quantity;
+                total += itemTotal;
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.quantity}</td>
+                    <td>₱${item.unitCost.toFixed(2)}</td>
+                    <td>₱${itemTotal.toFixed(2)}</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="removeFromCart('${item.productId}')">X</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('grandTotal').innerText = '₱' + total.toFixed(2);
+        }
+
+        async function submitTransaction() {
+            const supplierId = document.getElementById('supplierSelect').value;
+            if (!supplierId) {
+                window.showToast("Please select a supplier.", "info");
+                return;
+            }
+            
+            if (cart.length === 0) {
+                window.showToast("Order is empty.", "info");
+                return;
+            }
+
+            const payload = {
+                supplierId: parseInt(supplierId),
+                items: cart.map(i => ({ productId: parseInt(i.productId), quantity: i.quantity, unitCost: i.unitCost }))
+            };
+
+            try {
+                const response = await fetch('/Purchase/Create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    window.showToast("Purchase submitted successfully.", "success");
+                    window.location.href = '/Purchase/Receipt/' + encodeURIComponent(data.transactionId);
+                } else {
+                    const error = await response.json();
+                    window.showToast(error.message || "Unknown error", "error");
+                }
+            } catch (e) {
+                window.showToast("Network error occurred.", "error");
+                console.error(e);
+            }
+        }
+    </script>
+}

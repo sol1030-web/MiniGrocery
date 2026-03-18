@@ -1,0 +1,44 @@
+@model List<MiniGrocery.Web.Models.EmployeePayrollViewModel>
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Create Payroll</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Select Employee</h6>
+            <a asp-action="Index" class="btn btn-sm btn-secondary">Back to Employees</a>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="employeeSelect" class="form-label">Employee</label>
+                <select id="employeeSelect" class="form-control">
+                    <option value="">-- Select Employee --</option>
+                    @foreach (var e in Model)
+                    {
+                        <option value="@e.UserId">@e.UserName (@e.Email)</option>
+                    }
+                </select>
+            </div>
+            <div class="d-flex gap-2">
+                <button id="proceedBtn" class="btn btn-success" disabled>Proceed</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const select = document.getElementById('employeeSelect');
+            const btn = document.getElementById('proceedBtn');
+            select.addEventListener('change', () => {
+                btn.disabled = !select.value;
+            });
+            btn.addEventListener('click', () => {
+                if (!select.value) return;
+                const url = '@Url.Action("Create", "Payroll")' + '?id=' + encodeURIComponent(select.value);
+                window.location.href = url;
+            });
+        })();
+    </script>
+}

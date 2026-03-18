@@ -1,0 +1,116 @@
+@model List<MiniGrocery.Web.Models.EmployeePayrollViewModel>
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Employee Payroll Management</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Employees</h6>
+            @if (User.IsInRole("System Administrator"))
+            {
+                <a asp-action="History" class="btn btn-sm btn-info">View Payment History</a>
+            }
+            else if (User.IsInRole("Manager"))
+            {
+                <a asp-action="New" class="btn btn-sm btn-success">Create Payroll</a>
+            }
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-wrap align-items-center mb-3 gap-2">
+                <div class="input-group" style="max-width:420px;">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input id="employeeSearch" type="search" class="form-control" placeholder="Search name, email, or department" />
+                </div>
+                <select id="statusFilter" class="form-select" style="max-width:200px;">
+                    <option value="all" selected>All</option>
+                    <option value="active">Active</option>
+                    <option value="incomplete">Incomplete</option>
+                </select>
+            </div>
+            <div class="table-responsive" id="employeesTable">
+                <table class="table table-bordered table-modern table-hover" width="100%" cellspacing="0">
+                    <thead class="sticky-top bg-light">
+                        <tr>
+                            <th>Employee</th>
+                            <th>Department</th>
+                            <th>Position</th>
+                            <th class="text-end">Base Salary</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            var statusKey = item.HasDetails ? "active" : "incomplete";
+                            <tr data-status="@statusKey">
+                                <td>
+                                    <div>@item.UserName</div>
+                                    <small class="text-muted">@item.Email</small>
+                                </td>
+                                <td>@item.Department</td>
+                                <td>@item.Position</td>
+                                <td class="text-end">@item.BaseSalary.ToString("C")</td>
+                                <td>
+                                    @if (item.HasDetails)
+                                    {
+                                        <span class="badge modern-badge modern-badge-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge modern-badge modern-badge-warning">Incomplete Profile</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="Manage" asp-route-id="@item.UserId" 
+                                       class="btn-modern btn-icon btn-edit me-2" 
+                                       title="Edit Details" aria-label="Edit Details">
+                                        <i class="fas fa-pen"></i>
+                                    </a>
+                                    @if (item.HasDetails)
+                                    {
+                                        <a asp-action="Create" asp-route-id="@item.UserId" 
+                                           class="btn-modern btn-icon btn-pay" 
+                                           title="Pay Now" aria-label="Pay Now">
+                                            <i class="fas fa-credit-card"></i>
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+// Simple client-side filtering for employees table (UI-only)
+(function(){
+  const search = document.getElementById('employeeSearch');
+  const status = document.getElementById('statusFilter');
+  const tbody = document.querySelector('#employeesTable tbody');
+  if(!search || !status || !tbody) return;
+
+  function norm(s){ return (s||'').toString().toLowerCase(); }
+
+  function applyFilter(){
+    const q = norm(search.value);
+    const f = status.value; // all, active, incomplete
+    const rows = tbody.querySelectorAll('tr');
+    rows.forEach(row => {
+      const t = norm(row.textContent);
+      const rowStatus = row.getAttribute('data-status') || 'all';
+      const matchText = !q || t.includes(q);
+      const matchStatus = (f==='all') || (rowStatus===f);
+      row.style.display = (matchText && matchStatus) ? '' : 'none';
+    });
+  }
+
+  search.addEventListener('input', applyFilter);
+  status.addEventListener('change', applyFilter);
+})();
+</script>
+}

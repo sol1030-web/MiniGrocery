@@ -1,0 +1,15 @@
+@model dynamic
+<div class="erp-table-toolbar">
+    <div class="d-flex erp-gap-1">
+        <input type="search" class="erp-input" placeholder="@(Model?.SearchPlaceholder ?? "Search...")" />
+        @if (Model?.Filters != null)
+        {
+            <select class="erp-select">
+                @foreach (var f in (IEnumerable<string>)Model.Filters)
+                {
+                    <option>@f</option>
+                }
+            </select>
+        }
+    </div>
+</div>

@@ -1,0 +1,141 @@
+@model MiniGrocery.Web.Models.InvoiceDetailViewModel
+@inject IWebHostEnvironment Env
+@{
+    var logoPrimary = System.IO.Path.Combine(Env.WebRootPath, "img", "LOGOit15.png");
+    var logoFallback = Url.Content("~/img/minigrocery-logo.svg");
+    var logoSrc = System.IO.File.Exists(logoPrimary) ? Url.Content("~/img/LOGOit15.png") : logoFallback;
+}
+<div class="receipt a4">
+    <div class="receipt-header">
+        <img src="@logoSrc" alt="Logo" class="receipt-logo" />
+        <div class="receipt-title">
+            <div class="system-name">MiniGrocery</div>
+            <div class="doc-title">Sales Invoice</div>
+        </div>
+    </div>
+    <div class="receipt-meta">
+        <div>
+            <div class="meta-label">Invoice No.</div>
+            <div class="meta-value">INV-@Model.Id</div>
+        </div>
+        <div>
+            <div class="meta-label">Date & Time</div>
+            <div class="meta-value">@Model.Date.ToPhTime().ToString("yyyy-MM-dd HH:mm")</div>
+        </div>
+        <div>
+            <div class="meta-label">Processed By</div>
+            <div class="meta-value">@Model.CustomerName</div>
+        </div>
+        <div>
+            <div class="meta-label">Status</div>
+            <div class="meta-value">@Model.Status</div>
+        </div>
+        <div>
+            <div class="meta-label">Exchange Rate</div>
+            <div class="meta-value">
+                @(Model.ExchangeRateUsdPhp.HasValue && Model.ExchangeRateUsdPhp.Value > 0 
+                    ? $"USD {Model.ExchangeRateUsdPhp.Value:F2} PHP" 
+                    : "Exchange Rate Unavailable")
+            </div>
+        </div>
+    </div>
+    <table class="receipt-table">
+        <thead>
+            <tr>
+                <th class="col-item">Product</th>
+                <th class="col-qty">Qty</th>
+                <th class="col-price">Unit Price</th>
+                <th class="col-amount">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td class="col-item">@item.ProductName</td>
+                    <td class="col-qty text-center">@item.Quantity</td>
+                    <td class="col-price text-end">@item.UnitPrice.ToString("C", new System.Globalization.CultureInfo("en-PH"))</td>
+                    <td class="col-amount text-end">@item.Total.ToString("C", new System.Globalization.CultureInfo("en-PH"))</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-end total-label">Total</td>
+                <td class="text-end total-value">@Model.TotalAmount.ToString("C", new System.Globalization.CultureInfo("en-PH"))</td>
+            </tr>
+            <tr>
+                <td colspan="3" class="text-end">Cash Received</td>
+                <td class="text-end">@Model.CashTendered.ToString("C", new System.Globalization.CultureInfo("en-PH"))</td>
+            </tr>
+            <tr>
+                <td colspan="3" class="text-end">Change</td>
+                <td class="text-end">@Model.Change.ToString("C", new System.Globalization.CultureInfo("en-PH"))</td>
+            </tr>
+            <tr>
+                <td colspan="3" class="text-end">Balance</td>
+                <td class="text-end">@Model.Balance.ToString("C", new System.Globalization.CultureInfo("en-PH"))</td>
+            </tr>
+        </tfoot>
+    </table>
+    <div class="receipt-footer">
+        <div class="note">Thank you for your purchase.</div>
+        <div class="actions d-print-none">
+            <button class="btn btn-primary" onclick="printA4()">Download PDF</button>
+            <button class="btn btn-outline-secondary" onclick="printThermal()">Print Thermal</button>
+            <a asp-controller="Sales" asp-action="Create" class="btn btn-light">Back to POS</a>
+        </div>
+    </div>
+</div>
+<style>
+    .receipt { max-width: 860px; margin: 24px auto; background: #fff; padding: 24px; border: 1px solid #e5e7eb; border-radius: 12px; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color: #1f2937; }
+    .receipt-header { display:flex; align-items:center; gap:16px; border-bottom:1px solid #e5e7eb; padding-bottom:12px; margin-bottom:16px; }
+    .receipt-logo { height:48px; width:auto; }
+    .receipt-title .system-name { font-weight:600; font-size:18px; margin-bottom:2px; }
+    .receipt-title .doc-title { font-weight:500; font-size:16px; color:#6b7280; }
+    .receipt-meta { display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:16px; }
+    .meta-label { font-size:12px; color:#6b7280; }
+    .meta-value { font-size:14px; font-weight:500; }
+    .receipt-table { width:100%; border-collapse:collapse; table-layout: fixed; }
+    .receipt-table thead th { font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:#6b7280; border-bottom:1px solid #e5e7eb; padding:8px; }
+    .receipt-table tbody td { padding:8px; border-bottom:1px dashed #e5e7eb; font-size:14px; }
+    .receipt-table tfoot td { padding:8px; font-size:14px; }
+    .receipt-table .col-item { width:55%; }
+    .receipt-table .col-qty { width:10%; text-align:center; }
+    .receipt-table .col-price { width:17.5%; text-align:right; }
+    .receipt-table .col-amount { width:17.5%; text-align:right; }
+    .receipt-table th.col-price, .receipt-table th.col-amount,
+    .receipt-table td.col-price, .receipt-table td.col-amount { text-align:right; font-variant-numeric: tabular-nums; }
+    .receipt-table th.col-qty, .receipt-table td.col-qty { text-align:center; font-variant-numeric: tabular-nums; }
+    .receipt-table tfoot .text-end { font-variant-numeric: tabular-nums; }
+    .text-end { text-align:right; }
+    .text-center { text-align:center; }
+    .total-label { font-weight:600; }
+    .total-value { font-weight:700; }
+    .receipt-footer { margin-top:12px; display:flex; justify-content:space-between; align-items:center; }
+    .receipt-footer .note { font-size:12px; color:#6b7280; }
+    .btn { padding:8px 12px; font-size:14px; border-radius:8px; margin-right:8px; }
+    .thermal .receipt { width: 80mm; padding: 0; border: none; border-radius: 0; margin: 0; }
+    .thermal .receipt-header { padding: 8px; border-bottom: 1px dashed #e5e7eb; }
+    .thermal .receipt-table thead { display:none; }
+    .thermal .receipt-table tbody td { padding:6px 8px; font-size:12px; }
+    .thermal .receipt-meta { grid-template-columns: 1fr; padding: 0 8px; }
+    @@page { size: A4; margin: 16mm; }
+    .thermal @@page { size: 80mm auto; margin: 3mm; }
+    @@media print { .d-print-none { display: none !important; } body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+    @@media (max-width: 768px) {
+        .receipt { padding: 16px; margin: 8px; }
+        .receipt-header { flex-direction: row; justify-content:flex-start; gap:12px; }
+        .receipt-logo { height:40px; }
+        .receipt-title .system-name { font-size:16px; }
+        .receipt-title .doc-title { font-size:14px; }
+        .receipt-meta { grid-template-columns: repeat(2, 1fr); }
+        .receipt-table tbody td { font-size:13px; }
+        .btn { width: 100%; margin: 6px 0; }
+        .receipt-footer { flex-direction: column; align-items: flex-start; gap:8px; }
+    }
+</style>
+<script>
+    function printA4(){ document.body.classList.remove('thermal'); window.print(); }
+    function printThermal(){ document.body.classList.add('thermal'); window.print(); }
+</script>

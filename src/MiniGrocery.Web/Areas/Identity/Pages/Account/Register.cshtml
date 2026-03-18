@@ -1,0 +1,223 @@
+@page
+@model RegisterModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Register";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MiniGrocery ERP</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    
+    <style>
+        :root {
+            --primary-color: #0d1b2a; /* Dark Navy Blue */
+            --secondary-color: #00bcd4; /* Teal / Cyan */
+            --accent-color: #ffbf00; /* Amber */
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #1a3c5e 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+        }
+        
+        .register-container {
+            width: 100%;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .register-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            border-top: 5px solid var(--secondary-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo-container {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 15px;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .register-header h2 {
+            font-weight: 600;
+            color: #6c757d;
+            margin-bottom: 5px;
+            font-size: 1.25rem;
+        }
+        
+        .register-header p {
+            color: #adb5bd;
+            font-size: 0.9rem;
+        }
+        
+        .form-control {
+            height: 52px;
+            border-radius: 10px;
+            padding-left: 45px;
+            border: 2px solid #e9ecef;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1);
+        }
+        
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .form-group i {
+            position: absolute;
+            left: 16px;
+            top: 18px;
+            color: #adb5bd;
+            transition: color 0.2s;
+        }
+        
+        .form-control:focus + i, .form-group:focus-within i {
+            color: var(--secondary-color);
+        }
+        
+        .btn-register {
+            height: 52px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            background-color: var(--primary-color);
+            border: none;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(13, 27, 42, 0.2);
+        }
+        
+        .btn-register:hover {
+            background-color: #1a3c5e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(13, 27, 42, 0.3);
+        }
+
+        .footer-links {
+            margin-top: 25px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+            padding-top: 20px;
+        }
+
+        .footer-links a {
+            text-decoration: none;
+            color: var(--secondary-color);
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-card">
+            <div class="register-header">
+                <div class="logo-container">
+                    <img src="~/images/LOGOit15.png" alt="Mini Grocery Logo" />
+                </div>
+                <span class="brand-name">Mini Grocery</span>
+            </div>
+            
+            <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3 text-center small" role="alert"></div>
+                
+                <div class="form-group">
+                    <input asp-for="Input.FullName" class="form-control" autocomplete="name" aria-required="true" placeholder="Full Name" />
+                    <i class="fas fa-user"></i>
+                    <span asp-validation-for="Input.FullName" class="text-danger small d-block mt-1"></span>
+                </div>
+
+                <div class="form-group">
+                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="Email Address" />
+                    <i class="fas fa-envelope"></i>
+                    <span asp-validation-for="Input.Email" class="text-danger small d-block mt-1"></span>
+                </div>
+                
+                <div class="form-group">
+                    <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Password" />
+                    <i class="fas fa-lock"></i>
+                    <span asp-validation-for="Input.Password" class="text-danger small d-block mt-1"></span>
+                </div>
+                
+                <div class="form-group">
+                    <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Confirm Password" />
+                    <i class="fas fa-lock"></i>
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger small d-block mt-1"></span>
+                </div>
+                
+                <button id="register-submit" type="submit" class="btn btn-primary btn-register">
+                    Create Account <i class="fas fa-check-circle ms-2"></i>
+                </button>
+                
+                <div class="footer-links">
+                    <p class="text-muted small mb-0">Already have an account? <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Sign In</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Validation Scripts -->
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

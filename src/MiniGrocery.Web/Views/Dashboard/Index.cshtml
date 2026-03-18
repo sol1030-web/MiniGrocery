@@ -1,0 +1,627 @@
+@model MiniGrocery.Web.Models.AnalyticsDashboardViewModel
+
+@{
+    ViewData["Title"] = "Analytics Dashboard";
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Analytics Dashboard</h1>
+    </div>
+
+    <!-- Financial KPIs -->
+    <div class="row">
+        <!-- Monthly Sales -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a asp-controller="Sales" asp-action="Index" class="text-decoration-none">
+            <div class="card kpi-card border-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Sales (Month)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.MonthSales.ToString("C", new System.Globalization.CultureInfo("en-PH"))</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-peso-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </a>
+        </div>
+
+        <!-- Payroll Costs -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a asp-controller="Payroll" asp-action="Index" class="text-decoration-none">
+            <div class="card kpi-card border-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Payroll (Month)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.MonthPayroll.ToString("C", new System.Globalization.CultureInfo("en-PH"))</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </a>
+        </div>
+
+        <!-- Purchase Costs -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a asp-controller="Purchase" asp-action="Index" class="text-decoration-none">
+            <div class="card kpi-card border-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Purchases (Month)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.MonthPurchases.ToString("C", new System.Globalization.CultureInfo("en-PH"))</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </a>
+        </div>
+
+        <!-- Outstanding Balance -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a asp-controller="Billing" asp-action="Index" asp-route-status="Pending" class="text-decoration-none">
+            <div class="card kpi-card border-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Unpaid Invoices</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.OutstandingBalance.ToString("C", new System.Globalization.CultureInfo("en-PH"))</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-invoice fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Inventory KPIs -->
+    <div class="row">
+        <!-- Total Inventory Value -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a asp-controller="Inventory" asp-action="Index" class="text-decoration-none">
+            <div class="card kpi-card border-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Inventory Value</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.InventorySummary.TotalInventoryValue.ToString("C", new System.Globalization.CultureInfo("en-PH"))</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-boxes fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </a>
+        </div>
+
+        <!-- Low Stock Items -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a asp-controller="Inventory" asp-action="Index" class="text-decoration-none">
+             <div class="card kpi-card border-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Low Stock Items</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.InventorySummary.LowStockCount</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </a>
+        </div>
+        
+         <!-- Out of Stock Items -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a asp-controller="Inventory" asp-action="Index" class="text-decoration-none">
+             <div class="card kpi-card border-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Out of Stock</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.InventorySummary.OutOfStockCount</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </a>
+        </div>
+        
+         <!-- Total Products -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a asp-controller="Inventory" asp-action="Index" class="text-decoration-none">
+             <div class="card kpi-card border-secondary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                Total Products</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.InventorySummary.TotalProducts</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-cubes fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row">
+        <!-- Sales Overview -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Sales Overview (This Month)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="salesChart" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Sources -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Expenses Breakdown</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="expensesChart" style="height: 250px;"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-info"></i> Purchases
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-warning"></i> Payroll
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+         <!-- Inventory Status Chart -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Inventory Health</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                         <canvas id="inventoryChart" style="height: 250px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Payment Methods -->
+        <div class="col-xl-8 col-lg-7">
+             <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Payment Methods</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                         @foreach (var method in Model.PaymentMethods)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                @method.Method
+                                <div>
+                                    <span class="badge bg-secondary rounded-pill mr-2">@method.Count txns</span>
+                                    <span class="badge bg-primary rounded-pill">@method.TotalAmount.ToString("C", new System.Globalization.CultureInfo("en-PH"))</span>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tables Row -->
+    <div class="row">
+        <!-- Top Products -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Top Selling Products</h6>
+                </div>
+                <div class="card-body">
+                     <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var product in Model.TopProducts)
+                                {
+                                    <tr>
+                                        <td>@product.ProductName</td>
+                                        <td>@product.TotalQuantitySold</td>
+                                        <td>@product.TotalRevenue.ToString("C", new System.Globalization.CultureInfo("en-PH"))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Supplier Performance -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Top Suppliers (by Cost)</h6>
+                </div>
+                <div class="card-body">
+                     <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Supplier</th>
+                                    <th>Transactions</th>
+                                    <th>Total Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var supplier in Model.SupplierPerformance)
+                                {
+                                    <tr>
+                                        <td>@supplier.SupplierName</td>
+                                        <td>@supplier.TransactionCount</td>
+                                        <td>@supplier.TotalCost.ToString("C", new System.Globalization.CultureInfo("en-PH"))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Information Row (Holidays) -->
+    <div class="row">
+        <div class="col-xl-12 col-md-12 mb-4">
+            <div class="card shadow h-100" style="border-radius:14px;border:1px solid rgba(0,0,0,0.08);">
+                <div class="card-body">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                        <span style="font-size:12px;font-weight:600;color:#6c757d;letter-spacing:.4px;text-transform:uppercase;">Upcoming Holidays</span>
+                        <span style="display:inline-flex;align-items:center;gap:6px;color:#adb5bd;">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span style="font-size:12px;">Philippines</span>
+                        </span>
+                    </div>
+                    <ul id="upcomingHolidays" style="list-style:none;padding:0;margin:0;"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="holidayModal" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.18);">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="holidayTitle"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-lg-7">
+                            <div id="calendarContainer" style="border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:12px;"></div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div style="border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:12px;">
+                                <div id="holidayDetails" style="margin-bottom:10px;"></div>
+                                <div>
+                                    <strong style="font-size:13px;color:#6c757d;">Upcoming Events</strong>
+                                    <ul id="modalUpcoming" style="list-style:none;padding:0;margin:8px 0 0 0;"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        async function loadHolidays() {
+            const listEl = document.getElementById('upcomingHolidays');
+            listEl.innerHTML = '';
+            try {
+                const y = new Date().getFullYear();
+                const r = await fetch(`/api/holidays?year=${y}`, { headers: { 'Accept': 'application/json' } });
+                if (!r.ok) throw new Error('fail');
+                const data = await r.json();
+                const today = new Date();
+                const upcoming = data.filter(d => new Date(d.date) >= today).slice(0, 6);
+                if (upcoming.length === 0) {
+                    listEl.innerHTML = `<li class="text-muted" style="font-size:13px;">No upcoming holidays available</li>`;
+                    return;
+                }
+                for (const h of upcoming) {
+                    const li = document.createElement('li');
+                    li.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:8px 12px;margin:6px 0;border:1px solid rgba(0,0,0,0.06);background:rgba(0,0,0,0.02);border-radius:10px;box-shadow:0 1px 2px rgba(0,0,0,0.03);cursor:pointer;transition:background .15s';
+                    li.onmouseenter = () => li.style.background = 'rgba(0,0,0,0.04)';
+                    li.onmouseleave = () => li.style.background = 'rgba(0,0,0,0.02)';
+                    li.dataset.name = h.name;
+                    li.dataset.date = h.date;
+                    const left = document.createElement('span');
+                    left.textContent = h.name;
+                    left.style.cssText = 'font-weight:500;color:#343a40';
+                    const right = document.createElement('span');
+                    const d = new Date(h.date);
+                    right.textContent = d.toLocaleDateString(undefined, { month: 'short', day: '2-digit' });
+                    right.style.cssText = 'font-size:12px;color:#495057;display:inline-flex;align-items:center;background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.08);padding:4px 10px;border-radius:999px';
+                    li.append(left, right);
+                    li.addEventListener('click', () => openHolidayModal(h, data));
+                    listEl.appendChild(li);
+                }
+            } catch {
+                listEl.innerHTML = `<li class="text-muted" style="font-size:13px;">Unable to load calendar events</li>`;
+            }
+        }
+
+        function renderCalendar(selected) {
+            const cont = document.getElementById('calendarContainer');
+            const dt = new Date(selected);
+            const year = dt.getFullYear();
+            const month = dt.getMonth();
+            const first = new Date(year, month, 1);
+            const startDay = first.getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const grid = [];
+            for (let i = 0; i < startDay; i++) grid.push('');
+            for (let d = 1; d <= daysInMonth; d++) grid.push(d);
+            let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <strong>${dt.toLocaleString(undefined,{month:'long'})} ${year}</strong>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;font-size:12px;color:#6c757d;">
+                <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:6px;">`;
+            for (const cell of grid) {
+                const isSel = Number(cell) === dt.getDate();
+                html += `<div style="height:36px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(0,0,0,0.08);border-radius:8px;background:${isSel?'#e7f1ff':'#fff'};color:${isSel?'#0d6efd':'#343a40'}">${cell||''}</div>`;
+            }
+            html += `</div>`;
+            cont.innerHTML = html;
+        }
+
+        function openHolidayModal(h, all) {
+            document.getElementById('holidayTitle').textContent = h.name;
+            const d = new Date(h.date);
+            document.getElementById('holidayDetails').innerHTML = `<div style="font-size:14px;color:#343a40;">${d.toLocaleDateString(undefined,{weekday:'long', month:'long', day:'numeric', year:'numeric'})}</div>`;
+            const modalList = document.getElementById('modalUpcoming');
+            modalList.innerHTML = '';
+            const today = new Date();
+            const upcoming = all.filter(x => new Date(x.date) >= today).slice(0, 10);
+            for (const x of upcoming) {
+                const li = document.createElement('li');
+                li.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:6px 10px;margin:4px 0;border:1px solid rgba(0,0,0,0.06);background:rgba(0,0,0,0.02);border-radius:10px;cursor:pointer;transition:background .15s';
+                const left = document.createElement('span');
+                left.textContent = x.name;
+                const right = document.createElement('span');
+                right.textContent = new Date(x.date).toLocaleDateString(undefined,{month:'short',day:'2-digit'});
+                right.style.cssText = 'font-size:12px;color:#495057;background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.08);padding:3px 8px;border-radius:999px';
+                li.append(left,right);
+                li.onmouseenter = () => li.style.background = 'rgba(0,0,0,0.04)';
+                li.onmouseleave = () => li.style.background = 'rgba(0,0,0,0.02)';
+                li.addEventListener('click', () => {
+                    document.getElementById('holidayTitle').textContent = x.name;
+                    const dx = new Date(x.date);
+                    document.getElementById('holidayDetails').innerHTML = `<div style="font-size:14px;color:#343a40;">${dx.toLocaleDateString(undefined,{weekday:'long', month:'long', day:'numeric', year:'numeric'})}</div>`;
+                    renderCalendar(x.date);
+                });
+                modalList.appendChild(li);
+            }
+            renderCalendar(h.date);
+            const modalEl = document.getElementById('holidayModal');
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        }
+
+        document.addEventListener('DOMContentLoaded', loadHolidays);
+        // Set new default font family and font color to mimic Bootstrap's default styling
+        Chart.defaults.font.family = 'Nunito, -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+        Chart.defaults.color = '#858796';
+
+        // --- Sales Chart ---
+        var ctxSales = document.getElementById("salesChart");
+        var salesData = @Html.Raw(Json.Serialize(Model.DailyTrend));
+        var salesDates = salesData.map(d => new Date(d.date).toLocaleDateString());
+        var salesAmounts = salesData.map(d => d.totalAmount);
+
+        var salesChart = new Chart(ctxSales, {
+            type: 'line',
+            data: {
+                labels: salesDates,
+                datasets: [{
+                    label: "Earnings",
+                    lineTension: 0.3,
+                    backgroundColor: "rgba(78, 115, 223, 0.05)",
+                    borderColor: "rgba(78, 115, 223, 1)",
+                    pointRadius: 3,
+                    pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                    pointBorderColor: "rgba(78, 115, 223, 1)",
+                    pointHoverRadius: 3,
+                    pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                    pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                    pointHitRadius: 10,
+                    pointBorderWidth: 2,
+                    data: salesAmounts,
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 25,
+                        top: 25,
+                        bottom: 0
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            maxTicksLimit: 7
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            maxTicksLimit: 5,
+                            padding: 10,
+                            callback: function(value) {
+                                try {
+                                    return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(value);
+                                } catch (e) {
+                                    return '₱' + value;
+                                }
+                            }
+                        },
+                        grid: {
+                            color: "rgb(234, 236, 244)",
+                            zeroLineColor: "rgb(234, 236, 244)",
+                            drawBorder: false,
+                            borderDash: [2],
+                            zeroLineBorderDash: [2]
+                        }
+                    },
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                var label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // --- Expenses Chart ---
+        var ctxExpenses = document.getElementById("expensesChart");
+        var expensesChart = new Chart(ctxExpenses, {
+            type: 'doughnut',
+            data: {
+                labels: ["Purchases", "Payroll"],
+                datasets: [{
+                    data: [@Model.MonthPurchases, @Model.MonthPayroll],
+                    backgroundColor: ['#36b9cc', '#f6c23e'],
+                    hoverBackgroundColor: ['#2c9faf', '#dda20a'],
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                         callbacks: {
+                            label: function(context) {
+                                var label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed !== null) {
+                                    label += new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(context.parsed);
+                                }
+                                return label;
+                            }
+                        }
+                    },
+                    legend: {
+                        display: false
+                    },
+                },
+                cutout: '80%',
+            },
+        });
+        
+        // --- Inventory Chart ---
+        var ctxInventory = document.getElementById("inventoryChart");
+        var inventoryChart = new Chart(ctxInventory, {
+            type: 'pie',
+            data: {
+                labels: ["In Stock", "Low Stock", "Out of Stock"],
+                datasets: [{
+                    data: [
+                        @Model.InventorySummary.TotalProducts - @Model.InventorySummary.LowStockCount - @Model.InventorySummary.OutOfStockCount, 
+                        @Model.InventorySummary.LowStockCount, 
+                        @Model.InventorySummary.OutOfStockCount
+                    ],
+                    backgroundColor: ['#1cc88a', '#f6c23e', '#e74a3b'],
+                    hoverBackgroundColor: ['#17a673', '#dda20a', '#be2617'],
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                }
+            },
+        });
+    </script>
+}

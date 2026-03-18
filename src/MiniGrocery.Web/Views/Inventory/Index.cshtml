@@ -1,0 +1,214 @@
+@model List<MiniGrocery.Web.Models.ProductInventoryViewModel>
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Inventory Dashboard</h1>
+
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card kpi-card border-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Products</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card kpi-card border-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Low Stock Alerts</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count(p => p.IsLowStock)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Current Stock Levels</h6>
+            <div class="d-flex gap-2">
+                @if (User.IsInRole("System Administrator"))
+                {
+                    <a asp-action="History" class="btn btn-sm btn-info">View Movement History</a>
+                }
+                @if (User.IsInRole("Manager") || User.IsInRole("Inventory Clerk") || User.IsInRole("System Administrator"))
+                {
+                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                        <i class="fas fa-plus me-1"></i> Add Product
+                    </button>
+                    <a asp-action="Archived" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-box-archive me-1"></i> Archived Products
+                    </a>
+                }
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive" style="max-height: 600px;">
+                <table class="table table-bordered table-hover table-modern" width="100%" cellspacing="0">
+                    <thead class="sticky-top bg-light">
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Unit Price</th>
+                            <th>Current Stock</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="@((item.CurrentStock == 0 || item.IsLowStock) ? "table-danger" : "")">
+                                <td>@item.ProductName</td>
+                                <td>@item.Category</td>
+                                <td>@item.UnitPrice.ToString("C")</td>
+                                <td class="font-weight-bold">@item.CurrentStock</td>
+                                <td>
+                                    @if (item.CurrentStock == 0)
+                                    {
+                                        <span class="badge modern-badge modern-badge-danger">Out of Stock</span>
+                                    }
+                                    else if (item.IsLowStock)
+                                    {
+                                        <span class="badge modern-badge modern-badge-warning">Low Stock</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge modern-badge modern-badge-success">In Stock</span>
+                                    }
+                                </td>
+                                <td>
+                                    <button 
+                                        class="btn-modern btn-icon btn-edit me-1"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editStockModal"
+                                        data-product-id="@item.ProductId"
+                                        data-product-name="@item.ProductName"
+                                        data-current-stock="@item.CurrentStock"
+                                        data-unit-price="@item.UnitPrice"
+                                    >
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <form asp-action="Archive" asp-route-id="@item.ProductId" method="post" style="display:inline;">
+                                        <button type="submit" class="btn-modern btn-icon btn-pay" data-confirm="Archive @item.ProductName? This will set stock to 0 and hide it.">
+                                            <i class="fas fa-archive"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-action="AddProduct" method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="apName" class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="apName" name="name" required maxlength="100" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="apImage" class="form-label">Product Image</label>
+                            <input type="file" class="form-control" id="apImage" name="imageFile" accept=".png,.jpg,.jpeg,.webp" />
+                            <small class="text-muted">PNG, JPG, JPEG, or WebP. Max 5 MB.</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="apCategory" class="form-label">Category</label>
+                            <input type="text" class="form-control" id="apCategory" name="category" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="apPrice" class="form-label">Unit Price</label>
+                            <input type="number" class="form-control" id="apPrice" name="price" min="0" step="0.01" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="apStock" class="form-label">Initial Stock</label>
+                            <input type="number" class="form-control" id="apStock" name="stockQuantity" min="0" value="0" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="apDesc" class="form-label">Description</label>
+                            <textarea class="form-control" id="apDesc" name="description" rows="2"></textarea>
+                        </div>
+                        @if (TempData["InventoryError"] != null)
+                        {
+                            <div class="alert alert-danger" role="alert">@TempData["InventoryError"]</div>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editStockModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Stock</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-action="AdjustQuantity" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="editProductId" />
+                        <div class="mb-3">
+                            <label class="form-label">Product</label>
+                            <input type="text" class="form-control" id="editProductName" readonly />
+                        </div>
+                        <div class="mb-3">
+                            <label for="unitPrice" class="form-label">Unit Price</label>
+                            <input type="number" class="form-control" id="unitPrice" name="unitPrice" min="0" step="0.01" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="newQuantity" class="form-label">New Quantity</label>
+                            <input type="number" class="form-control" id="newQuantity" name="newQuantity" min="0" required />
+                            <small class="text-muted">Current: <span id="currentStockLabel"></span></small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const editModal = document.getElementById('editStockModal');
+        editModal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+            const id = button.getAttribute('data-product-id');
+            const name = button.getAttribute('data-product-name');
+            const current = button.getAttribute('data-current-stock');
+            const price = button.getAttribute('data-unit-price');
+            document.getElementById('editProductId').value = id;
+            document.getElementById('editProductName').value = name;
+            document.getElementById('currentStockLabel').textContent = current;
+            document.getElementById('newQuantity').value = current;
+            document.getElementById('unitPrice').value = Number(price).toFixed(2);
+        });
+    </script>
+}

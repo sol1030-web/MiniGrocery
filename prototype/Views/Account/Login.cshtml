@@ -1,0 +1,167 @@
+@{
+    Layout = null;
+    ViewData["Title"] = "Login";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Mini Grocery</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-teal: #19d3da;
+            --brand-navy: #0d1b2a;
+            --card-shadow: 0 12px 24px rgba(13, 27, 42, 0.25);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(1000px 500px at 20% 10%, rgba(25, 211, 218, 0.18), transparent 60%),
+                        radial-gradient(1000px 500px at 80% 90%, rgba(25, 211, 218, 0.12), transparent 60%),
+                        linear-gradient(135deg, #0b1726 0%, #10243c 100%);
+        }
+
+        .login-card {
+            position: relative;
+            border: none;
+            border-radius: 16px;
+            background: #ffffff;
+            box-shadow: var(--card-shadow);
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .login-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            background: var(--brand-teal);
+        }
+
+        .brand-logo {
+            width: 170px;
+            height: 170px;
+            object-fit: contain;
+        }
+
+        .login-body {
+            padding: 32px 28px 24px 28px;
+        }
+
+        .login-title {
+            font-weight: 700;
+            color: #1a2b49;
+        }
+
+        .input-group .input-group-text {
+            background: #eef3f7;
+            border: 1px solid #dde6ee;
+            border-right: none;
+            color: #6b7a90;
+        }
+
+        .form-control {
+            border: 1px solid #dde6ee;
+            border-left: none;
+            border-radius: 10px;
+            padding: 12px 14px;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(25, 211, 218, 0.2);
+            border-color: var(--brand-teal);
+        }
+
+        .btn-login {
+            background: #0e1e33;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-weight: 700;
+            width: 100%;
+            box-shadow: 0 8px 20px rgba(13, 27, 42, 0.35);
+        }
+
+        .btn-login:hover {
+            background: #122948;
+            color: #fff;
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.9rem;
+            color: #6b7a90;
+        }
+
+        @@media (max-width: 576px) {
+            .login-card {
+                margin: 16px;
+            }
+            .login-body {
+                padding: 24px 20px 18px 20px;
+            }
+            .brand-logo {
+                width: 130px;
+                height: 130px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="login-body">
+            <div class="text-center mb-3">
+                <img src="~/img/LOGOit15.png" alt="Mini Grocery" class="brand-logo mb-2" onerror="this.onerror=null;this.src='/img/minigrocery-logo.svg';">
+                <h4 class="login-title mb-3">Mini Grocery</h4>
+            </div>
+            <form asp-controller="Account" asp-action="Login" method="post">
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-muted">Email Address</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                        <input type="text" name="username" class="form-control" placeholder="Enter email address" value="admin@minigrocery.com">
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-muted">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        <input type="password" name="password" class="form-control" placeholder="Enter password" value="password">
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="remember">
+                        <label class="form-check-label small text-muted" for="remember">Remember me</label>
+                    </div>
+                    <a href="#" class="small text-decoration-none" style="color: var(--brand-teal);">Forgot password?</a>
+                </div>
+                <button type="submit" class="btn btn-login">
+                    Sign in <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+            </form>
+            <div class="text-center mt-3">
+                <small class="text-muted">Don't have an account? <a href="#" style="color: var(--brand-teal);">Create Account</a></small>
+            </div>
+            <div class="footer-text">&copy; 2026 Mini Grocery. All rights reserved.</div>
+        </div>
+    </div>
+</body>
+</html>

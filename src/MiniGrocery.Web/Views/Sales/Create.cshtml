@@ -1,0 +1,348 @@
+@model MiniGrocery.Web.Models.CreateSaleViewModel
+@inject IWebHostEnvironment Env
+
+@{
+    ViewData["Title"] = "New Sale (POS)";
+}
+
+<div class="container-fluid">
+    <div class="row h-100">
+        <!-- Product Selection Area -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4 h-100">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-boxes me-2"></i> Product Selection
+                    </h6>
+                    <div class="input-group w-50">
+                        <span class="input-group-text bg-light border-0"><i class="fas fa-search"></i></span>
+                        <input type="text" id="productSearch" class="form-control border-0 bg-light small" placeholder="Search products..." aria-label="Search">
+                    </div>
+                </div>
+                <div class="card-body overflow-auto" style="max-height: 75vh;">
+                    <div class="row" id="productList">
+                        @foreach (var product in Model.AvailableProducts)
+                        {
+                            <div class="col-md-4 col-sm-6 mb-3 product-card-wrapper" data-name="@product.Name.ToLower()">
+                                <div class="card h-100 border-left-primary product-card cursor-pointer" 
+                                     onclick="quickAdd('@product.Id', '@product.Name', @product.Price, @product.StockQuantity)">
+                                    <div class="card-body text-center">
+                                        @{
+                                            var name = product.Name.Trim();
+                                            var firstWord = new string((name.Split(' ')[0] ?? "").Where(c => c != '(' && c != ')').ToArray());
+                                            var candidates = new List<string>
+                                            {
+                                                name,
+                                                name.ToLower(),
+                                                firstWord,
+                                                firstWord.ToLower()
+                                            };
+                                            var extensions = new[] { ".webp", ".jpg", ".jpeg", ".png" };
+                                            string? chosen = null;
+                                            // Prefer uploaded product-specific image: /img/products/product_{id}.ext
+                                            foreach (var ext in extensions)
+                                            {
+                                                var phys1 = System.IO.Path.Combine(Env.WebRootPath, "img", "products", $"product_{product.Id}{ext}");
+                                                if (System.IO.File.Exists(phys1))
+                                                {
+                                                    chosen = Url.Content($"~/img/products/product_{product.Id}{ext}");
+                                                    break;
+                                                }
+                                            }
+                                            // Fallback to name-based images under /images
+                                            if (chosen == null)
+                                            {
+                                                foreach (var baseName in candidates)
+                                                {
+                                                    foreach (var ext in extensions)
+                                                    {
+                                                        var phys = System.IO.Path.Combine(Env.WebRootPath, "images", baseName + ext);
+                                                        if (System.IO.File.Exists(phys))
+                                                        {
+                                                            chosen = Url.Content($"~/images/{baseName}{ext}");
+                                                            break;
+                                                        }
+                                                    }
+                                                    if (chosen != null) break;
+                                                }
+                                            }
+                                            var imgSrc = chosen ?? Url.Content("~/images/placeholder.png");
+                                        }
+                                        <img src="@imgSrc" class="card-img-top product-img mb-2" alt="@product.Name" />
+                                        <div class="h5 font-weight-bold text-primary mb-1">@product.Name</div>
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            @product.Price.ToString("C", new System.Globalization.CultureInfo("en-PH"))
+                                        </div>
+                                        <div class="small text-gray-500">Stock: @product.StockQuantity</div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cart Area -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4 h-100">
+                <div class="card-header py-3 bg-white">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-shopping-cart me-2"></i> Current Order
+                    </h6>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <div class="table-responsive flex-grow-1" style="max-height: 50vh; overflow-y: auto;">
+                        <table class="table table-bordered table-sm" id="cartTable">
+                            <thead class="thead-light sticky-top" style="top: 0; background: white;">
+                                <tr>
+                                    <th>Item</th>
+                                    <th width="22%" class="text-center">Qty</th>
+                                    <th>Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Items will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-auto border-top pt-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="font-weight-bold text-gray-800">Subtotal:</span>
+                            <span class="font-weight-bold text-gray-800" id="subTotal">₱0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="font-weight-bold text-gray-800">Tax (0%):</span>
+                            <span class="font-weight-bold text-gray-800">₱0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-4">
+                            <span class="h4 font-weight-bold text-primary">Total:</span>
+                            <span class="h4 font-weight-bold text-primary" id="grandTotal">₱0.00</span>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-success btn-lg btn-block" onclick="submitTransaction()">
+                                <i class="fas fa-check-circle me-2"></i> Complete Sale
+                            </button>
+                            <button class="btn btn-danger btn-block" onclick="clearCart()">
+                                <i class="fas fa-trash me-2"></i> Clear Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .cursor-pointer { cursor: pointer; }
+    .product-card:hover { transform: translateY(-3px); transition: transform 0.2s; box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
+    .product-img { height: 120px; object-fit: cover; border-radius: .5rem .5rem 0 0; }
+    .cart-qty-group { max-width: 120px; }
+    .cart-qty-btn { min-width: 32px; padding: 0; font-weight: 600; }
+    .cart-qty-input { max-width: 48px; padding: 0; border-left: 0; border-right: 0; font-weight: 600; }
+</style>
+
+@section Scripts {
+    <script>
+        let cart = [];
+        let paymentTotal = 0;
+
+        // Search Filter
+        document.getElementById('productSearch').addEventListener('keyup', function() {
+            let filter = this.value.toLowerCase();
+            let cards = document.querySelectorAll('.product-card-wrapper');
+            
+            cards.forEach(card => {
+                let name = card.getAttribute('data-name');
+                if (name.includes(filter)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        function quickAdd(id, name, price, stock) {
+            // Check stock
+            const existingItem = cart.find(i => i.productId === id);
+            let currentQty = existingItem ? existingItem.quantity : 0;
+            
+            if (currentQty + 1 > stock) {
+                window.showToast("Insufficient stock.", "error");
+                return;
+            }
+
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ productId: id, name, price, quantity: 1, stock });
+            }
+            renderCart();
+        }
+
+        function updateQty(id, change) {
+            const item = cart.find(i => i.productId === id);
+            if (!item) return;
+
+            if (item.quantity + change > item.stock) {
+                window.showToast("Insufficient stock.", "error");
+                return;
+            }
+            
+            item.quantity += change;
+            
+            if (item.quantity <= 0) {
+                removeFromCart(id);
+            } else {
+                renderCart();
+            }
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(i => i.productId !== productId);
+            renderCart();
+        }
+
+        function clearCart() {
+            if(confirm('Are you sure you want to clear the cart?')) {
+                cart = [];
+                renderCart();
+            }
+        }
+
+        function renderCart() {
+            const tbody = document.querySelector('#cartTable tbody');
+            tbody.innerHTML = '';
+            let total = 0;
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="align-middle">
+                        <div class="font-weight-bold text-primary">${item.name}</div>
+                        <div class="small text-muted">₱${item.price.toFixed(2)}</div>
+                    </td>
+                    <td class="align-middle text-center">
+                        <div class="input-group input-group-sm cart-qty-group mx-auto">
+                            <button class="btn btn-outline-secondary cart-qty-btn" type="button" onclick="updateQty('${item.productId}', -1)">-</button>
+                            <input type="text" class="form-control text-center cart-qty-input" value="${item.quantity}" readonly>
+                            <button class="btn btn-outline-secondary cart-qty-btn" type="button" onclick="updateQty('${item.productId}', 1)">+</button>
+                        </div>
+                    </td>
+                    <td class="align-middle font-weight-bold">₱${itemTotal.toFixed(2)}</td>
+                    <td class="align-middle text-center">
+                        <button class="btn btn-link text-danger p-0" onclick="removeFromCart('${item.productId}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('subTotal').innerText = '₱' + total.toFixed(2);
+            document.getElementById('grandTotal').innerText = '₱' + total.toFixed(2);
+            paymentTotal = total;
+        }
+
+        function openPaymentModal() {
+            const totalEl = document.getElementById('paymentTotal');
+            const changeEl = document.getElementById('paymentChange');
+            const inputEl = document.getElementById('paymentInput');
+            const confirmBtn = document.getElementById('paymentConfirm');
+            totalEl.textContent = '₱' + paymentTotal.toFixed(2);
+            inputEl.value = '';
+            changeEl.textContent = '₱0.00';
+            confirmBtn.disabled = true;
+            const mdl = new bootstrap.Modal(document.getElementById('paymentModal'));
+            mdl.show();
+            inputEl.focus();
+            inputEl.oninput = function () {
+                const tendered = parseFloat(this.value) || 0;
+                const change = Math.max(0, tendered - paymentTotal);
+                changeEl.textContent = '₱' + change.toFixed(2);
+                confirmBtn.disabled = tendered < paymentTotal;
+            };
+        }
+
+        async function submitTransaction() {
+            if (cart.length === 0) {
+                window.showToast("Your cart is empty.", "info");
+                return;
+            }
+            openPaymentModal();
+        }
+
+        async function confirmPaymentAndSubmit() {
+            const inputEl = document.getElementById('paymentInput');
+            const tendered = parseFloat(inputEl.value) || 0;
+            if (tendered < paymentTotal) {
+                window.showToast("Payment is insufficient.", "error");
+                return;
+            }
+            const payload = {
+                items: cart.map(i => ({ productId: parseInt(i.productId), quantity: i.quantity })),
+                paymentAmount: tendered,
+                PaymentAmount: tendered,
+                cashTendered: tendered
+            };
+
+            try {
+                const response = await fetch('/Sales/Create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    window.showToast("Sale completed successfully.", "success");
+                    window.location.href = '/Billing/Receipt/' + encodeURIComponent(data.invoiceId);
+                } else {
+                    const error = await response.json();
+                    window.showToast(error.message || "Unknown error", "error");
+                }
+            } catch (e) {
+                window.showToast("Network error occurred.", "error");
+                console.error(e);
+            }
+        }
+    </script>
+}
+
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Payment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <div class="d-flex justify-content-between"><span>Total</span><strong id="paymentTotal">₱0.00</strong></div>
+        </div>
+        <div class="mb-3">
+          <label for="paymentInput" class="form-label">Cash</label>
+          <input type="number" class="form-control" id="paymentInput" min="0" step="0.01" placeholder="Enter amount">
+        </div>
+        <div class="mb-2 d-flex justify-content-between">
+          <span>Change</span>
+          <strong id="paymentChange">₱0.00</strong>
+        </div>
+        <div class="text-muted small">Pay at least the total.</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" id="paymentConfirm" class="btn btn-primary" onclick="confirmPaymentAndSubmit()" disabled>Confirm</button>
+      </div>
+    </div>
+  </div>
+  </div>

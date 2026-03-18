@@ -1,0 +1,29 @@
+@model dynamic
+<div class="erp-page-header">
+    <div class="d-flex align-items-center justify-content-between">
+        <div>
+            @if (Model?.Breadcrumb != null)
+            {
+                <div class="erp-breadcrumb mb-1">
+                    @for (int i = 0; i < ((IEnumerable<string>)Model.Breadcrumb).Count(); i++)
+                    {
+                        var label = ((IEnumerable<string>)Model.Breadcrumb).ElementAt(i);
+                        <span>@label</span>
+                        @if (i < ((IEnumerable<string>)Model.Breadcrumb).Count() - 1)
+                        {
+                            <span class="mx-2">›</span>
+                        }
+                    }
+                </div>
+            }
+            <h1 class="erp-title h3">@Model?.Title</h1>
+        </div>
+        @if (!string.IsNullOrEmpty((string?)Model?.ActionText) && !string.IsNullOrEmpty((string?)Model?.ActionUrl))
+        {
+            <a href="@Model.ActionUrl" class="erp-btn erp-btn-primary">
+                @if (Model?.ActionIcon != null) { <i class="@Model.ActionIcon"></i> }
+                <span>@Model.ActionText</span>
+            </a>
+        }
+    </div>
+</div>

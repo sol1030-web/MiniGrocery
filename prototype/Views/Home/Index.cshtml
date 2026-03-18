@@ -1,0 +1,74 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid">
+
+    <!-- Features Row -->
+    <div class="row">
+        <!-- Inventory Management Card -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="p-3 bg-light rounded-circle text-primary me-3">
+                            <i class="fas fa-boxes fa-2x"></i>
+                        </div>
+                        <h5 class="card-title mb-0">Inventory</h5>
+                    </div>
+                    <p class="card-text text-muted">Manage your product records, update stock levels, and monitor low stock alerts.</p>
+                    <div class="d-grid mt-4">
+                        <a asp-controller="Product" asp-action="Index" class="btn btn-primary">
+                            <i class="fas fa-list me-2"></i>View Products
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="p-3 bg-light rounded-circle text-info me-3">
+                            <i class="fas fa-shopping-cart fa-2x"></i>
+                        </div>
+                        <h5 class="card-title mb-0">Sales</h5>
+                    </div>
+                    <p class="card-text text-muted">Process new sales and review sales history.</p>
+                    <div class="d-grid gap-2 mt-4">
+                        <a asp-controller="Sales" asp-action="Create" class="btn btn-info text-white">
+                            <i class="fas fa-cash-register me-2"></i>New Sale (POS)
+                        </a>
+                        <a asp-controller="Sales" asp-action="Index" class="btn btn-outline-info">
+                            <i class="fas fa-receipt me-2"></i>Sales History
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchase -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="p-3 bg-light rounded-circle text-warning me-3">
+                            <i class="fas fa-truck fa-2x"></i>
+                        </div>
+                        <h5 class="card-title mb-0">Purchase</h5>
+                    </div>
+                    <p class="card-text text-muted">Supplier management and purchase orders.</p>
+                    <div class="d-grid mt-4">
+                        <button class="btn btn-outline-warning">
+                            <i class="fas fa-tools me-2"></i>Under Construction
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</div>

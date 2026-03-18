@@ -1,0 +1,151 @@
+@{
+    ViewData["Title"] = "Client Dashboard";
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h3 mb-0 text-gray-800">Welcome back, Client!</h1>
+            <p class="text-muted">Your personal shopping summary</p>
+        </div>
+    </div>
+
+    <!-- Client KPI Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100 py-2 border-start border-4 border-info">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Purchases</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">₱12,450.00</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-bag fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100 py-2 border-start border-4 border-success">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Recent Orders</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">5 Orders</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-receipt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100 py-2 border-start border-4 border-warning">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Loyalty Points</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">850 Pts</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-star fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Shopping History -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Purchase History</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Order #</th>
+                                    <th>Items</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Feb 12, 2026</td>
+                                    <td>ORD-7721</td>
+                                    <td>Fresh Milk, Eggs...</td>
+                                    <td class="fw-bold">₱450.00</td>
+                                    <td><span class="badge bg-success">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Feb 10, 2026</td>
+                                    <td>ORD-7715</td>
+                                    <td>Bread, Apple, Banana</td>
+                                    <td class="fw-bold">₱210.00</td>
+                                    <td><span class="badge bg-success">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Feb 05, 2026</td>
+                                    <td>ORD-7690</td>
+                                    <td>Soda Can, Chips</td>
+                                    <td class="fw-bold">₱125.00</td>
+                                    <td><span class="badge bg-success">Completed</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-white text-center">
+                    <a href="#" class="btn btn-link btn-sm">View All Orders</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Member Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-3">
+                        <a asp-controller="Sales" asp-action="Create" class="btn btn-outline-primary py-2">
+                            <i class="fas fa-shopping-cart me-2"></i>Start New Shop
+                        </a>
+                        <button class="btn btn-outline-info py-2">
+                            <i class="fas fa-user-edit me-2"></i>Update Profile
+                        </button>
+                        <button class="btn btn-outline-secondary py-2">
+                            <i class="fas fa-question-circle me-2"></i>Need Help?
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card bg-primary text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fas fa-gift fa-3x"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-1">Exclusive Offer!</h5>
+                            <p class="card-text small mb-0">Get 10% off on your next dairy purchase. Use code: <strong>DAIRY10</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

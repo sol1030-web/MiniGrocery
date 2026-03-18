@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#19d3da"/>
+      <stop offset="1" stop-color="#0d8bd7"/>
+    </linearGradient>
+  </defs>
+  <rect x="6" y="6" width="116" height="116" rx="14" fill="#ffffff"/>
+  <rect x="6" y="6" width="116" height="116" rx="14" fill="none" stroke="#e6eef5" stroke-width="2"/>
+
+  <g transform="translate(18,22)">
+    <rect x="0" y="16" width="92" height="12" rx="6" fill="url(#g1)"/>
+    <g transform="translate(0,0)">
+      <rect x="2" y="0" width="8" height="16" fill="#0d8bd7" opacity="0.8"/>
+      <rect x="14" y="4" width="8" height="12" fill="#19d3da" opacity="0.9"/>
+      <rect x="26" y="2" width="8" height="14" fill="#0db2c4" opacity="0.9"/>
+      <rect x="38" y="6" width="8" height="10" fill="#0d8bd7" opacity="0.85"/>
+      <rect x="50" y="3" width="8" height="13" fill="#19d3da" opacity="0.9"/>
+    </g>
+    <g transform="translate(0,30)">
+      <path d="M5 0h64l8 20H18l-4 8H0v-6h9l3-6h62l-4-10H9z" fill="#10243c"/>
+      <circle cx="24" cy="34" r="6" fill="#19d3da"/>
+      <circle cx="64" cy="34" r="6" fill="#19d3da"/>
+    </g>
+  </g>
+
+  <g transform="translate(18,86)">
+    <rect x="0" y="0" width="92" height="28" rx="8" fill="#0e1e33"/>
+    <text x="46" y="18" font-family="Inter, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#ffffff" font-weight="700">Mini Grocery</text>
+    <text x="46" y="26" font-family="Inter, Arial, sans-serif" font-size="7" text-anchor="middle" fill="#19d3da" font-weight="600">Shopping & Sales System</text>
+  </g>
+</svg>

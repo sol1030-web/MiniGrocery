@@ -1,0 +1,199 @@
+@using Microsoft.AspNetCore.Identity
+@using MiniGrocery.Web.Entities
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@inject IWebHostEnvironment Env
+@inject MiniGrocery.Web.Services.IExchangeRatesService FxService
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MiniGrocery</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/MiniGrocery.Web.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                @{
+                    var logoPngPath = System.IO.Path.Combine(Env.WebRootPath, "img", "LOGOit15.png");
+                    var logoSrc = System.IO.File.Exists(logoPngPath) ? Url.Content("~/img/LOGOit15.png") : Url.Content("~/img/minigrocery-logo.svg");
+                }
+                <img src="@logoSrc" alt="MiniGrocery" class="sidebar-brand-logo me-2" />
+                <span>MiniGrocery</span>
+            </div>
+
+            <ul class="list-unstyled components">
+                @if (User.IsInRole("Manager") || User.IsInRole("System Administrator"))
+                {
+                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Dashboard" ? "active" : "")">
+                        <a asp-controller="Dashboard" asp-action="Index">
+                            <i class="fas fa-tachometer-alt"></i><span class="menu-text ms-2">Dashboard</span>
+                        </a>
+                    </li>
+                }
+
+                @if (User.IsInRole("Manager") || User.IsInRole("Sales Staff") || User.IsInRole("System Administrator"))
+                {
+                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Sales" && ViewContext.RouteData.Values["Action"]?.ToString() == "Create" ? "active" : "")">
+                        <a asp-controller="Sales" asp-action="Create">
+                            <i class="fas fa-cash-register"></i><span class="menu-text ms-2">New Sale (POS)</span>
+                        </a>
+                    </li>
+                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Sales" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")">
+                        <a asp-controller="Sales" asp-action="Index">
+                            <i class="fas fa-receipt"></i><span class="menu-text ms-2">Sales History</span>
+                        </a>
+                    </li>
+                }
+
+                @if (User.IsInRole("Manager") || User.IsInRole("Inventory Clerk") || User.IsInRole("System Administrator"))
+                {
+                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Purchase" ? "active" : "")">
+                        <a href="#purchaseSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                            <i class="fas fa-truck"></i><span class="menu-text ms-2">Purchase</span>
+                        </a>
+                        <ul class="collapse list-unstyled ps-3" id="purchaseSubmenu">
+                            <li>
+                                <a asp-controller="Purchase" asp-action="Create">New Purchase</a>
+                            </li>
+                            <li>
+                                <a asp-controller="Purchase" asp-action="Index">Purchase History</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Inventory" ? "active" : "")">
+                        <a asp-controller="Inventory" asp-action="Index">
+                            <i class="fas fa-boxes"></i><span class="menu-text ms-2">Inventory</span>
+                        </a>
+                    </li>
+                }
+
+                @if (User.IsInRole("Manager") || User.IsInRole("System Administrator"))
+                {
+                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Payroll" ? "active" : "")">
+                        <a asp-controller="Payroll" asp-action="Index">
+                            <i class="fas fa-money-check-alt"></i><span class="menu-text ms-2">Payroll</span>
+                        </a>
+                    </li>
+                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Billing" ? "active" : "")">
+                        <a asp-controller="Billing" asp-action="Index">
+                            <i class="fas fa-file-invoice"></i><span class="menu-text ms-2">Billing</span>
+                        </a>
+                    </li>
+                }
+
+                @if (User.IsInRole("System Administrator"))
+                {
+                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active" : "")">
+                        <a asp-controller="Users" asp-action="Index">
+                            <i class="fas fa-users-cog"></i><span class="menu-text ms-2">Users</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+        <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+        <!-- Page Content -->
+        <div id="content">
+            <nav class="navbar navbar-top navbar-expand-lg navbar-light">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-link text-secondary">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    
+                    <h5 class="m-0 ms-3 text-secondary">@ViewData["Title"]</h5>
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="nav navbar-nav ms-auto">
+                            @{
+                                var fx = await FxService.GetLatestAsync(System.Threading.CancellationToken.None);
+                            }
+                            <li class="nav-item d-flex align-items-center me-3">
+                                <span style="
+                                    display:inline-flex;
+                                    align-items:center;
+                                    padding:6px 14px;
+                                    border-radius:999px;
+                                    background:rgba(0,0,0,0.04);
+                                    border:1px solid rgba(0,0,0,0.08);
+                                    box-shadow:0 1px 2px rgba(0,0,0,0.06);
+                                    color:#4a4a4a;
+                                    font-size:13px;
+                                    line-height:1;
+                                ">
+                                    USD @(fx.usd > 0 ? fx.usd.ToString("F2") : "N/A") PHP
+                                </span>
+                            </li>
+                            @if (SignInManager.IsSignedIn(User))
+                            {
+                                var user = await UserManager.GetUserAsync(User);
+                                var roleDisplay = "Account";
+                                if (user != null)
+                                {
+                                    var roles = await UserManager.GetRolesAsync(user);
+                                    if (roles.Contains("System Administrator")) { roleDisplay = "Admin"; }
+                                    else if (roles.Contains("Manager")) { roleDisplay = "Manager"; }
+                                    else if (roles.Contains("Sales Staff")) { roleDisplay = "Staff"; }
+                                    else if (roles.Contains("Inventory Clerk")) { roleDisplay = "Clerk"; }
+                                }
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-secondary" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-user-circle fa-lg me-1"></i> @roleDisplay
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                        <li>
+                                            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                                <button type="submit" class="dropdown-item">Logout</button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="main-content">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await Html.PartialAsync("_Toast")
+    @if (TempData["ToastSuccess"] != null)
+    {
+        <script>window.showToast('@TempData["ToastSuccess"]','success');</script>
+    }
+    @if (TempData["ToastError"] != null)
+    {
+        <script>window.showToast('@TempData["ToastError"]','error');</script>
+    }
+    @if (TempData["ToastInfo"] != null)
+    {
+        <script>window.showToast('@TempData["ToastInfo"]','info');</script>
+    }
+    
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
